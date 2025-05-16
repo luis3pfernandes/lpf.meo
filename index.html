@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LPF NETWORKS - Registo de Serviços</title>
+
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background-color: #f5f5f5;
+    }
+
+    main {
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header img {
+      max-height: 220px;
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #222;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    #equipamentos, #equipamentosApeados {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9e9e9;
+      border-radius: 5px;
+    }
+
+    .equipamento {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .remover-btn {
+      background-color: #b71c1c !important;;
+      color: white !important;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: auto;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .remover-btn:hover {
+      background-color: #7f0000 !important;
+    }
+
+    button[type="button"] {
+      background-color: #0057B8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    button[type="button"]:hover {
+      background-color: #004494;
+    }
+
+    .metros-adicionais, .Quantidade {
+      display: none;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 5px;
+      }
+
+      main {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="lpfn_logo.jpg" alt="Logotipo LPF Networks" />
+    </header>
+
+    <h2>Registo de Serviços</h2>
+
+    <form id="ordemForm">
+      <label for="ordemTrabalho">Ordem de Trabalho:</label>
+      <input type="text" id="ordemTrabalho" name="ordemTrabalho" required />
+
+      <label for="acesso">Acesso / Número de rede:</label>
+      <input type="text" id="acesso" name="acesso" required />
+
+      <label for="tipoServico">Tipo de Serviço:</label>
+      <select id="tipoServico" name="tipoServico" required>
+        <option value="Instalação do serviço MEO">Instalação do serviço MEO</option>
+        <option value="Instalação de Acesso Empresarial">Instalação de Acesso Empresarial</option>
+        <option value="Instalação GRP">Instalação GRP</option>
+        <option value="Diverços Inst./Eqip.">Diverços Inst./Eqip.</option>
+        <option value="Diverços Repor/Mud.Int">Diverços Repor/Mud.Int</option>
+        <option value="Reposição de serviço ao cliente">Reposição de serviço ao cliente</option>
+      </select>
+
+      <label for="laceteMetroAdicional">Lacete metros adicionais:</label>
+      <select id="laceteMetroAdicional" name="laceteMetroAdicional" onchange="mostrarCamposMetro()" required>
+        <option value="Não">Não</option>
+        <option value="Sim">Sim</option>
+      </select>
+
+      <div id="metros-adicionais" class="metros-adicionais">
+        <label for="numeroMetros">Metros:</label>
+        <input type="number" id="numeroMetros" name="numeroMetros" min="1" step="1" />
+      </div>
+
+      <label for="instalacaoCalha">Instalação de Calha P/Prot Cabos:</label>
+      <select id="instalacaoCalha" name="instalacaoCalha" onchange="mostrarCamposCalha()" required>
+        <option value="Não">Não</option>
+        <option value="Sim">Sim</option>
+      </select>
+
+      <div id="Quantidade-calha" class="Quantidade">
+        <label for="quantidadeCalha">Quantidade:</label>
+        <input type="number" id="quantidadeCalha" name="quantidadeCalha" min="1" step="1" />
+      </div>
+
+      <h2>Equipamentos instalados</h2>
+      <div id="equipamentos"></div>
+      <button type="button" onclick="adicionarEquipamento('instalados')">Adicionar Instalados</button>
+
+      <h2>Equipamentos apeados</h2>
+      <div id="equipamentosApeados"></div>
+      <button type="button" onclick="adicionarEquipamento('apeados')">Adicionar Apeados</button>
+
+      <button type="button" onclick="enviarOrdem()">Salvar e Enviar por E-mail</button>
+    </form>
+  </main>
+
+  <script>
+    function mostrarCamposMetro() {
+      const valor = document.getElementById('laceteMetroAdicional').value;
+      document.getElementById('metros-adicionais').style.display = valor === 'Sim' ? 'block' : 'none';
+    }
+
+    function mostrarCamposCalha() {
+      const valor = document.getElementById('instalacaoCalha').value;
+      document.getElementById('Quantidade-calha').style.display = valor === 'Sim' ? 'block' : 'none';
+    }
+
+    function adicionarEquipamento(tipo) {
+      const container = tipo === 'instalados' ? document.getElementById('equipamentos') : document.getElementById('equipamentosApeados');
+      const div = document.createElement('div');
+      div.className = 'equipamento';
+      div.innerHTML = `
+        <label>Equipamento:</label>
+        <select name="tipoEquipamento${tipo}[]" required>
+          <option value="ONT">ONT</option>
+          <option value="HGW">HGW</option>
+          <option value="FGW">FGW</option>
+          <option value="BOX">BOX</option>
+          <option value="Extensor WI-FI">Extensor WI-FI</option>
+          <option value="TSF Analógico">TSF Analógico</option>
+          <option value="TCF Analógico">TCF Analógico</option>
+          <option value="Audiocode GWRIDS">Audiocode GWRDIS</option>
+          <option value="BASE VoiceOffice">BASE VoiceOffice</option>
+          <option value="TSF VoiceOffice">TSF VoiceOffice</option>
+          <option value="TCF VoiceOffice">TCF VoiceOffice</option>
+        </select>
+        <label>Número de Série:</label>
+        <input type="text" name="numeroSerie${tipo}[]" required />
+        <button type="button" class="remover-btn" onclick="removerEquipamento(this)">
+          <i class="fas fa-trash-alt"></i> Remover
+        </button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removerEquipamento(botao) {
+      botao.parentElement.remove();
+    }
+
+    function enviarOrdem() {
+      const ordemTrabalho = document.getElementById('ordemTrabalho').value.trim();
+      const acesso = document.getElementById('acesso').value.trim();
+      const tipoServico = document.getElementById('tipoServico').value;
+      const laceteMetroAdicional = document.getElementById('laceteMetroAdicional').value;
+      const numeroMetros = document.getElementById('numeroMetros')?.value.trim() || 'N/A';
+      const instalacaoCalha = document.getElementById('instalacaoCalha').value;
+      const quantidadeCalha = document.getElementById('quantidadeCalha')?.value.trim() || 'N/A';
+
+      const tiposInstalados = document.getElementsByName('tipoEquipamentoinstalados[]');
+      const numerosSerieInstalados = document.getElementsByName('numeroSerieinstalados[]');
+      const tiposApeados = document.getElementsByName('tipoEquipamentoapeados[]');
+      const numerosSerieApeados = document.getElementsByName('numeroSerieapeados[]');
+
+      let equipamentosInstaladosTexto = '';
+      for (let i = 0; i < tiposInstalados.length; i++) {
+        equipamentosInstaladosTexto += `Instalado ${i + 1}:\nTipo: ${tiposInstalados[i].value}\nNúmero de Série: ${numerosSerieInstalados[i].value}\n\n`;
+      }
+
+      let equipamentosApeadosTexto = '';
+      for (let i = 0; i < tiposApeados.length; i++) {
+        equipamentosApeadosTexto += `Apeado ${i + 1}:\nTipo: ${tiposApeados[i].value}\nNúmero de Série: ${numerosSerieApeados[i].value}\n\n`;
+      }
+
+      const corpoEmail = 
+        `Registo de Serviço\n\n` +
+        `Ordem de Trabalho: ${ordemTrabalho}\n` +
+        `Acesso / Número de rede: ${acesso}\n` +
+        `Tipo de Serviço: ${tipoServico}\n` +
+        `Lacete adicional: ${laceteMetroAdicional}\n` +
+        `Metros: ${numeroMetros}\n` +
+        `Instalação de Calha P/Prot Cabos: ${instalacaoCalha}\n` +
+        `Quantidade de Calhas: ${quantidadeCalha}\n\n` +
+        (equipamentosInstaladosTexto ? `Equipamentos Instalados:\n\n${equipamentosInstaladosTexto}` : '') +
+        (equipamentosApeadosTexto ? `Equipamentos Apeados:\n\n${equipamentosApeadosTexto}` : '');
+
+      const email = 'ordensdetrabalholpf@gmail.com';
+      const assunto = `Ordem de Trabalho ${ordemTrabalho}`;
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpoEmail)}`;
+
+      window.location.href = mailtoLink;
+    }
+  </script>
+</body>
+</html>
